@@ -172,9 +172,9 @@ S = varargin{3};
 para = varargin{4};
 I_before = get(S.im_original, 'cdata');
 
-expression_str = get(S.ctrl_expression, 'string')
-expression_choice = get(S.ctrl_expression, 'val')
-expression_level = get(S.ctrl_expression_bar, 'value')
+expression_str = get(S.ctrl_expression, 'string');
+expression_choice = get(S.ctrl_expression, 'val');
+expression_level = get(S.ctrl_expression_bar, 'value');
 
 
 %% Set level of expression
@@ -202,28 +202,12 @@ function [] = load_hair_color(varargin)
 S = varargin{3};
 para = varargin{4};
 color = uisetcolor();
-para('hair') = color;
+para('hair') = round(255 * color);
 set(S.ctrl_hair_chosen, 'BackgroundColor', color);
 
 function [] = load_lense_color(varargin)
 S = varargin{3};
 para = varargin{4};
 color = uisetcolor();
-para('lense') = color;
+para('lense') = round(255 * color);
 set(S.ctrl_lense_chosen, 'BackgroundColor', color);
-
-function [] = pb_call(varargin)
-% Callback for GUI_24 pushbutton.
-S = varargin{3};  % Get the structure.
-f = figure('units','pixels',...
-       'menubar','none',...
-       'position',[750 510 200 100]); % Create a new GUI.
-E = uicontrol('style','edit',...
-              'units','pixels',...
-              'position',[10 20 180 60],...
-              'string','Type something, press return.',...
-              'callback',{@E_call,varargin{3}});
-uicontrol(E);  % Allow user to simply hit return without typing anything.
-% If user closes GUI_24, close new one as well because it will error when 
-% it tries to execute the callback otherwise.      
-set(S,'deletefcn',{@fig_delet,f})    

@@ -8,7 +8,7 @@ mouthSetting = para('mouth');
 eyeSetting = para('eye');
 hairSetting = para('hair');
 eyeColorSetting = para('lense');
-
+hairSetting
 I = dyeHair(I,hairSetting);
 
 
