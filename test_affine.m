@@ -225,17 +225,18 @@ function [imgFace] = oneSideTransform(imgFace, Part, setting, ratio, deny)
     end
     
     imgFace(uint32(M_UL(1)):uint32(M_LR(1)),uint32(M_UL(2)):uint32(M_LR(2)),:) = M(1:uint32(M_LR(1)-M_UL(1)+1), 1:uint32(M_LR(2)-M_UL(2)+1), :);
-    imgFace(floor(t_M_UL(1)), floor(t_M_UL(2)), :) = [0, 0, 0];
-    imgFace(floor(t_M_UR(1)), floor(t_M_UR(2)), :) = [0, 0, 0];
-    imgFace(floor(t_M_LL(1)), floor(t_M_LL(2)), :) = [0, 0, 0];
-    imgFace(floor(t_M_LR(1)), floor(t_M_LR(2)), :) = [0, 0, 0];
 end
 
 function [imgFace] = twoSideTransform(imgFace, Part, setting, ratio)
     Part1 = [(Part(1,1)) (Part(1,2)) (Part(1, 3)/2) (Part(1,4))];
     Part2 = [(Part(1,1)+Part(1, 3)/2) (Part(1,2)) (Part(1, 3)/2) (Part(1,4))];
     imgFace = oneSideTransform(imgFace, Part1, setting, ratio, [0 1 0 0]);
-    imgFace = oneSideTransform(imgFace, Part2, -setting, ratio, [0 0 0 1]);
+    if setting >=10
+        setting = setting -10;
+    else
+        setting = setting +10;
+    end
+    imgFace = oneSideTransform(imgFace, Part2, setting, ratio, [0 0 0 1]);
 
 end
 
