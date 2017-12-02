@@ -1,12 +1,12 @@
 clear all;
-I = imread('111.jpg');
+I = imread('yy.jpg');
 
 
 %Settings 
 mouthSetting = 3;
 eyeSetting = 12;
-hairSetting = [0 0 100];
-eyeColorSetting = [255 0 0];
+hairSetting = [100 0 100];
+eyeColorSetting = [100 100 100];
 
 I = dyeHair(I,hairSetting);
 [Face, imgFace, LeftEye, RightEye, Mouth, LeftEyebrow,  RightEyebrow] = detectFacialRegions(I);
@@ -26,11 +26,11 @@ RightEye_forL(1,4) = RightEye(1,4)-RightEyebrow(1,4);
 
 imgFace = ColorLenz(LeftEye_forL,eyeColorSetting,imgFace);
 imgFace = ColorLenz(RightEye_forL,eyeColorSetting,imgFace);
-
+imgFace = ColorLenz(Mouth, eyeColorSetting,imgFace);
 %%
 %setting value
 
-mouthRatio = 1;
+mouthRatio = 0;
 LeftEyeRatio = 10 * LeftEyebrow(4)/LeftEye(4);
 RightEyeRatio = 10 * RightEyebrow(4)/RightEye(4);
 imgFace = twoSideTransform(imgFace, Mouth, mouthSetting,mouthRatio);
