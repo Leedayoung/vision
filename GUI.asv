@@ -157,8 +157,8 @@ set(S.change,'callback',{@apply,S, para});
 set(S.ctrl_hair, 'callback',{@load_hair_color,S, para});
 set(S.ctrl_lense, 'callback',{@load_lense_color,S, para});
 for i = 1:6
-    set( S.ctrl_hair_recommand(i), 'callback',{@set_hair_color,S, i, para});
-    set( S.ctrl_lense_recommand(i), 'callback',{@set_lense_color,S, i, para});
+ S.ctrl_hair_recommand(i) = uicontrol('callback',{@set_hair_color,S, i, para});
+ S.ctrl_lense_recommand(i) = uicontrol('callback',{@set_lense_color,S, i, para});
 end 
 
 function [] = load_image(varargin)
@@ -191,7 +191,7 @@ para = varargin{5};
 
 color = get(S.ctrl_hair_recommand(i), 'BackgroundColor');
 para('hair') = round(255 * color);
-set(S.ctrl_hair_chosen, 'BackgroundColor', color);
+set(S.ctrl_hair_chosen, color);
 
 function [] = set_lense_color(varargin)
 S = varargin{3};
@@ -200,7 +200,7 @@ para = varargin{5};
 
 color = get(S.ctrl_lense_recommand(i), 'BackgroundColor');
 para('lense') = round(255 * color);
-set(S.ctrl_lense_chosen, 'BackgroundColor', color);
+set(S.ctrl_lense_chosen, color);
 
 function [] = apply(varargin)
 S = varargin{3};
