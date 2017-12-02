@@ -5,18 +5,21 @@ I = imresize(I, [224,224]);
 [Face, imgFace, LeftEye, RightEye, Mouth, LeftEyebrow,  RightEyebrow] = detectFacialRegions(I);
 
 %setting value
-mouthSetting = 3.3;
-eyeSetting = 3.3;
-imgFace = twoSideTransform(imgFace, Mouth, mouthSetting);
-imgFace = twoSideTransform(imgFace,LeftEye,eyeSetting);
-imgFace = twoSideTransform(imgFace,RightEye,eyeSetting);
+mouthSetting = 3;
+eyeSetting = 13;
+
+mouthRatio = 1;
+eyeRatio = 2.8;
+imgFace = twoSideTransform(imgFace, Mouth, mouthSetting,mouthRatio);
+imgFace = twoSideTransform(imgFace,LeftEye,eyeSetting,eyeRatio);
+imgFace = twoSideTransform(imgFace,RightEye,eyeSetting,eyeRatio);
 
 G = imgFace;
 [x,y,~] = size(G);
 I(Face(1,2):Face(1,2)+x-1,Face(1,1):Face(1,1)+y-1,:) = imgFace;
 imshow(I);
 
-function [imgFace] = twoSideTransform(imgFace, Part, setting)
+function [imgFace] = twoSideTransform(imgFace, Part, setting, ratio)
     
     if setting > 10
         setting = -(setting-10);
@@ -25,24 +28,40 @@ function [imgFace] = twoSideTransform(imgFace, Part, setting)
     
     tform1 = affine2d([1 setting_val 0; 0 1 0; 0 0 1]);
     tform2 = affine2d([1 -setting_val 0; 0 1 0; 0 0 1]);
-
-    Part(1,2) = Part(1,2) + uint8(Part(1,4)*2/10);
-    Part(1,4) = uint8(Part(1,4)*8/10);
+    
+    Part(1,2) = Part(1,2) + uint8(Part(1,4)*ratio/10);
+    Part(1,4) = uint8(Part(1,4)*7/10);
+    
     M1_UL = [Part(1,2); Part(1,1)];
     M2_UL = [Part(1,2); Part(1,1)+Part(1,3)/2];
     M1_LR = [Part(1,2)+Part(1,4); Part(1,1)+Part(1,3)/2];
     M2_LR = [Part(1,2)+Part(1,4); Part(1,1)+Part(1,3)];
 
-    t_M1_UL = M1_UL;
-    t_M1_UR = [(M1_UL(1)+M1_LR(1)*setting_val)/(1+setting_val), M1_LR(2)];
-    t_M1_LL = [(M1_LR(1)+M1_UL(1)*setting_val)/(1+setting_val), M1_UL(2)];
-    t_M1_LR = M1_LR;
+   if setting_val >= 0
+        t_M1_UL = M1_UL;
+        t_M1_UR = [(M1_UL(1)+M1_LR(1)*setting_val)/(1+setting_val), M1_LR(2)];
+        t_M1_LL = [(M1_LR(1)+M1_UL(1)*setting_val)/(1+setting_val), M1_UL(2)];
+        t_M1_LR = M1_LR;
 
-    t_M2_UL = [(M2_UL(1)+M2_LR(1)*setting_val)/(1+setting_val), M2_UL(2)];
-    t_M2_UR = [M2_UL(1), M2_LR(2)];
-    t_M2_LL = [M2_LR(1), M2_UL(2)];
-    t_M2_LR = [(M2_LR(1)+M2_UL(1)*setting_val)/(1+setting_val), M2_LR(2)];
+        t_M2_UL = [(M2_UL(1)+M2_LR(1)*setting_val)/(1+setting_val), M2_UL(2)];
+        t_M2_UR = [M2_UL(1), M2_LR(2)];
+        t_M2_LL = [M2_LR(1), M2_UL(2)];
+        t_M2_LR = [(M2_LR(1)+M2_UL(1)*setting_val)/(1+setting_val), M2_LR(2)];
+    else
+        setting_val = -setting_val;
+        t_M1_UL = [(M1_UL(1)+(M1_LR(1))*setting_val)/(1+setting_val), M1_UL(2)];
+        t_M1_UR = [M1_UL(1), M1_LR(2)];
+        t_M1_LL = [M1_LR(1), M1_UL(2)];
+        t_M1_LR = [(M1_LR(1)-(M1_LR(1)-M1_UL(1))*setting_val), M1_LR(2)];
 
+        t_M2_UL = M2_UL;
+        t_M2_UR = [(M2_UL(1)+M2_LR(1)*setting_val)/(1+setting_val), M2_LR(2)];
+        t_M2_LL = [(M1_LR(1)-(M1_LR(1)-M1_UL(1))*setting_val), M1_LR(2)];
+        t_M2_LR = M2_LR; 
+%         
+        
+    end
+    
     %
     LeftPart = imgFace(M1_UL(1):M1_LR(1),M1_UL(2):M1_LR(2),:);
     RightPart = imgFace(M2_UL(1):M2_LR(1),M2_UL(2):M2_LR(2),:);
@@ -54,8 +73,6 @@ function [imgFace] = twoSideTransform(imgFace, Part, setting)
     
     LeftPart = imwarp(LeftPart,tform1,'FillValues',[Color(1,1,1);Color(1,1,2);Color(1,1,3)]);
     RightPart = imwarp(RightPart,tform2,'FillValues',[Color2(1,1,1);Color2(1,1,2);Color2(1,1,3)]);
-    
-    
     %
     pos = [Part(1, 2), Part(1, 1)];
     dir = 0;
@@ -116,15 +133,15 @@ function [imgFace] = twoSideTransform(imgFace, Part, setting)
     end
     %
     
-    xy = [t_M1_UL(2)-10 t_M1_UL(1); t_M1_UR(2)-10 t_M1_UR(1)];
+    xy = [t_M1_UL(2) t_M1_UL(1)+1; t_M1_UR(2) t_M1_UR(1)+1];
     %calculate slope and y intercept
     m1 = (xy(2,2)-xy(1,2))/(xy(2,1)-xy(1,1));
     n1 = xy(2,2)-xy(2,1) * m1;
    
-    xy = [t_M1_LL(2)+10 t_M1_LL(1); t_M1_LR(2)+10 t_M1_LR(1)];
+    xy = [t_M1_LL(2) t_M1_LL(1)-1; t_M1_LR(2) t_M1_LR(1)-1];
     %calculate slope and y intercept
     m2 = (xy(2,2)-xy(1,2))/(xy(2,1)-xy(1,1));
-    n2 = xy(2,2)-xy(2,1) * m1;
+    n2 = xy(2,2)-xy(2,1) * m2;
     
     LeftPart = imresize(LeftPart, [x1,y1]);
     for n=0:x1-1
@@ -136,15 +153,15 @@ function [imgFace] = twoSideTransform(imgFace, Part, setting)
         end
     end
     
-    xy = [t_M2_UL(2) t_M2_UL(1); t_M2_UR(2) t_M2_UR(1)];
+    xy = [t_M2_UL(2) t_M2_UL(1)+1; t_M2_UR(2) t_M2_UR(1)+1];
     %calculate slope and y intercept
     m1 = (xy(2,2)-xy(1,2))/(xy(2,1)-xy(1,1));
     n1 = xy(2,2)-xy(2,1) * m1;
    
-    xy = [t_M2_LL(2) t_M2_LL(1); t_M2_LR(2) t_M2_LR(1)];
+    xy = [t_M2_LL(2) t_M2_LL(1)-1; t_M2_LR(2) t_M2_LR(1)-1];
     %calculate slope and y intercept
     m2 = (xy(2,2)-xy(1,2))/(xy(2,1)-xy(1,1));
-    n2 = xy(2,2)-xy(2,1) * m1;
+    n2 = xy(2,2)-xy(2,1) * m2;
     
     
     RightPart = imresize(RightPart, [x2,y2]);
@@ -156,5 +173,13 @@ function [imgFace] = twoSideTransform(imgFace, Part, setting)
              end
         end
     end
-    
+%  imgFace(int32(t_M1_UL(1)), int32(t_M1_UL(2)), :) = [0, 0, 211];
+%  imgFace(int32(t_M1_UR(1)), int32(t_M1_UR(2)), :) = [0, 0, 211];
+%  imgFace(int32(t_M1_LL(1)), int32(t_M1_LL(2)), :) = [0, 0, 211];
+%  imgFace(int32(t_M1_LR(1)), int32(t_M1_LR(2)), :) = [0, 0, 211];
+%  imgFace(int32(t_M2_UL(1)), int32(t_M2_UL(2)), :) = [0, 0, 211];
+%  imgFace(int32(t_M2_UR(1)), int32(t_M2_UR(2)), :) = [0, 0, 211];
+%  imgFace(int32(t_M2_LL(1)), int32(t_M2_LL(2)), :) = [0, 0, 211];
+%  imgFace(int32(t_M2_LR(1)), int32(t_M2_LR(2)), :) = [0, 0, 211];
+
 end
