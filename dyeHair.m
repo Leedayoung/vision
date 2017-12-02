@@ -5,13 +5,13 @@ function [Image_origin] = dyeHair(Image,hairSetting)
     if size(Image,3)==3 % RGB image
         Image=rgb2gray(Image);
     end
-    threshold = graythresh(Image);
+    threshold = graythresh(Image)-0.3;
     %% Convert to binary image
-    if(threshold > 0.6)
-        threshold = threshold-0.3;
-    else 
-        threshold = 0.3;
-    end
+%     if(threshold > 0.6)
+%         threshold = threshold-0.3;
+%     else 
+%         threshold = 0.3;
+%     end
 
     Image =~im2bw(Image,threshold);
     %% Remove all object containing fewer than 30 pixels
@@ -47,9 +47,9 @@ function [Image_origin] = dyeHair(Image,hairSetting)
         for x = 1:width
             if(L(y,x) ~=0)
                 value = ((255.0 -double(I2(y,x))*3)/255.0);
-                Image_origin(y,x,1) = hairSetting(1)*value;
-                Image_origin(y,x,2) = hairSetting(2)*value;
-                Image_origin(y,x,3) = hairSetting(3)*value;
+                Image_origin(y,x,1) = hairSetting(1)+Image_origin(y,x,1);
+                Image_origin(y,x,2) = hairSetting(2)+ Image_origin(y,x,2);
+                Image_origin(y,x,3) = hairSetting(3)+ Image_origin(y,x,3);
             end
         end
     end

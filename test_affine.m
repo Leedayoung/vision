@@ -1,3 +1,4 @@
+
 function I_after = test_affine(I_before, para)
 
 I = I_before;
@@ -29,11 +30,11 @@ RightEye_forL(1,4) = RightEye(1,4)-RightEyebrow(1,4);
 
 imgFace = ColorLenz(LeftEye_forL,eyeColorSetting,imgFace);
 imgFace = ColorLenz(RightEye_forL,eyeColorSetting,imgFace);
-
+imgFace = ColorLenz(Mouth, eyeColorSetting,imgFace);
 %%
 %setting value
 
-mouthRatio = 1;
+mouthRatio = 0;
 LeftEyeRatio = 10 * LeftEyebrow(4)/LeftEye(4);
 RightEyeRatio = 10 * RightEyebrow(4)/RightEye(4);
 imgFace = twoSideTransform(imgFace, Mouth, mouthSetting,mouthRatio);
