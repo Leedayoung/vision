@@ -11,18 +11,17 @@ function  [Face, imgFace, LeftEye, RightEye, Mouth, LeftEyebrow,  RightEyebrow] 
 %%
 
 %To detect Face
- FDetect = vision.CascadeObjectDetector;
+ FDetect = vision.CascadeObjectDetector('FrontalFaceCART');
  Face = step(FDetect,I);
  imgFace = (I(Face(1,2):Face(1,2)+Face(1,4),Face(1,1):Face(1,1)+Face(1,3),:));
 
  %To detect Left Eye
- EyeDetect = vision.CascadeObjectDetector('LeftEye');
+ EyeDetect = vision.CascadeObjectDetector('LeftEyeCART');
  Eye=step(EyeDetect,imgFace);
  LeftEye  = Eye(1,:);
  
  %To detect Right Eye
- EyeDetect = vision.CascadeObjectDetector('LeftEye');
- Eye=step(EyeDetect,imgFace);
+%
  RightEye = Eye(2,:);
  
 %To detect Mouth
