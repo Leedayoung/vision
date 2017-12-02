@@ -1,14 +1,17 @@
-clear all;
-I = imread('111.jpg');
+function I_after = test_affine(I_before, para)
+
+I = I_before;
 
 
 %Settings 
-mouthSetting = 3;
-eyeSetting = 12;
-hairSetting = [0 0 100];
-eyeColorSetting = [255 0 0];
+mouthSetting = para('mouth');
+eyeSetting = para('eye');
+hairSetting = para('hair');
+eyeColorSetting = para('lense');
 
 I = dyeHair(I,hairSetting);
+
+
 [Face, imgFace, LeftEye, RightEye, Mouth, LeftEyebrow,  RightEyebrow] = detectFacialRegions(I);
 % 
 % LeftEyebrow = findEyeboundary(LeftEyebrow,imgFace);
@@ -41,6 +44,9 @@ G = imgFace;
 [x,y,~] = size(G);
 I(Face(1,2):Face(1,2)+x-1,Face(1,1):Face(1,1)+y-1,:) = imgFace;
 imshow(I);
+I_after =I;
+
+end
 
 function [imgFace] = oneSideTransform(imgFace, Part, setting, ratio)
     
@@ -445,3 +451,5 @@ function [imgFace] = twoSideTransform(imgFace, Part, setting, ratio)
 
     imgFace(M1_UL(1):M2_LR(1),M1_UL(2):M2_LR(2),:) = M;
 end
+
+
