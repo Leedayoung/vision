@@ -33,9 +33,9 @@ for i = 1 : Part(1,4)
     for j = 1: Part(1,3)
         if(imagen(i,j) == 1)
             value = ((255.0 -double(I2(Part(1,2)+i,Part(1,1)+j))*3)/255.0);
-           imgFace(Part(1,2)+i,Part(1,1)+j,1) = eyeColorSetting(1)+imgFace(Part(1,2)+i,Part(1,1)+j,1);
-            imgFace(Part(1,2)+i,Part(1,1)+j,2) = eyeColorSetting(2)+imgFace(Part(1,2)+i,Part(1,1)+j,2);
-             imgFace(Part(1,2)+i,Part(1,1)+j,3) =eyeColorSetting(3)+imgFace(Part(1,2)+i,Part(1,1)+j,3);
+           imgFace(Part(1,2)+i,Part(1,1)+j,1) = eyeColorSetting(1)*2/3+imgFace(Part(1,2)+i,Part(1,1)+j,1)/3;
+            imgFace(Part(1,2)+i,Part(1,1)+j,2) = eyeColorSetting(2)*2/3+imgFace(Part(1,2)+i,Part(1,1)+j,2)/3;
+             imgFace(Part(1,2)+i,Part(1,1)+j,3) =eyeColorSetting(3)*2/3+imgFace(Part(1,2)+i,Part(1,1)+j,3)/3;
         end 
     end
 end
