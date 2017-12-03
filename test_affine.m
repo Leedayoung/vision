@@ -9,6 +9,8 @@ mouthSetting = para('mouth');
 eyeSetting = para('eye');
 hairSetting = para('hair');
 eyeColorSetting = para('lense');
+cheek_set = para('cheek');
+
 %hairSetting
 I = dyeHair(I,hairSetting);
 
@@ -26,7 +28,9 @@ RightEyeRatio = 10 * RightEyebrow(4)/RightEye(4);
 % RightEyeRatio = 2.5;
 
 %%Cheek
-imgFace = cheek(LeftEye, RightEye, imgFace);
+if(cheek_set)
+    imgFace = cheek(LeftEye, RightEye, imgFace);
+end
 
 imgFace = twoSideTransform(imgFace, Mouth, mouthSetting,mouthRatio);
 imgFace = twoSideTransform(imgFace,LeftEye,eyeSetting,LeftEyeRatio);
