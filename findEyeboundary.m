@@ -15,7 +15,7 @@ A = Part;
      R = imgFace(int32(y+h), int32(x), 1)/3+ imgFace(int32(y+h), int32(x), 2)/3+ imgFace(int32(y+h), int32(x), 3)/3;
      M1 = (imgFace(int32(y+h), int32(x+w/4), 1)/3+ imgFace(int32(y+h), int32(x+w/4), 2)/3+ imgFace(int32(y+h), int32(x+w/4), 3)/3);
      M2 = (imgFace(int32(y+h), int32(x+w/2), 1)/3+ imgFace(int32(y+h), int32(x+w/2), 2)/3+ imgFace(int32(y+h), int32(x+w/2), 3)/3);
-     M3 = (imgFace(int32(y+h), int32(x+3*w/4), 1)/3+ imgFace(int32(y+h), int32(x+3*w/2), 2)/4+ imgFace(int32(y+h), int32(x+3*w/4), 3)/3);
+     M3 = (imgFace(int32(y+h), int32(x+3*w/4), 1)/3+ imgFace(int32(y+h), int32(x+3*w/4), 2)/4+ imgFace(int32(y+h), int32(x+3*w/4), 3)/3);
      M = M1/3 + M2/3 + M3/3;
 
      if((L/2+R/2)>=M)
