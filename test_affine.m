@@ -16,28 +16,26 @@ I = dyeHair(I,hairSetting);
 [Face, imgFace, LeftEye, RightEye, Mouth, LeftEyebrow,  RightEyebrow] = detectFacialRegions(I);
 detector = buildDetector();
 [bbox a] = detectFaceParts(detector,I,2);
-figure;
-imshow(a);
 
 x = bbox(:, 5: 8);
 y = bbox(:, 9:12);
 
-LeftEye(1,1) = x(1,1)-Face(1,1);
-LeftEye(1,2) = x(1,2)-Face(1,2);
-LeftEye(1,3) = x(1,3);
-LeftEye(1,4) = x(1,4);
+LeftEye(1,1) = int32(x(1,1)-Face(1,1)+double(x(1,3)*0.2));
+LeftEye(1,2) = int32(x(1,2)-Face(1,2)+double(x(1,4)*0.2));
+LeftEye(1,3) = int32(x(1,3)*0.7);
+LeftEye(1,4) = int32(x(1,4)*0.8);
 
 
-RightEye(1,1) = y(1,1)-Face(1,1);
-RightEye(1,2) = y(1,2)-Face(1,2);
-RightEye(1,3) = y(1,3);
-RightEye(1,4) = y(1,4);
+RightEye(1,1) = int32(y(1,1)-Face(1,1)+double(y(1,3)*0.2));
+RightEye(1,2) = int32(y(1,2)-Face(1,2)+double(y(1,4)*0.2));
+RightEye(1,3) = int32(y(1,3)*0.7);
+RightEye(1,4) = int32(y(1,4)*0.8);
 % LeftEyebrow = findEyeboundary(LeftEyebrow,imgFace);
 % RightEyebrow = findEyeboundary(RightEyebrow,imgFace);
 
 mouthRatio = 0;
-LeftEyeRatio = 4;
-RightEyeRatio = 4;
+LeftEyeRatio = 0;
+RightEyeRatio = 0;
 % LeftEyeRatio = 10 * LeftEyebrow(4)/LeftEye(4);
 % RightEyeRatio = 10 * RightEyebrow(4)/RightEye(4);
 % 
