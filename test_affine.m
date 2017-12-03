@@ -19,7 +19,7 @@ I = dyeHair(I,hairSetting);
 if LeftEye ~= [0 0 0 0]
     LeftEyebrow = findEyeboundary(LeftEyebrow,imgFace);
     RightEyebrow = findEyeboundary(RightEyebrow,imgFace);
-    mouthRatio = 2;
+    mouthRatio = 1;
     LeftEyeRatio = 10 * LeftEyebrow(4)/LeftEye(4);
     RightEyeRatio = 10 * RightEyebrow(4)/RightEye(4);
 else
