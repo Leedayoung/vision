@@ -13,27 +13,35 @@ eyeColorSetting = para('lense');
 I = dyeHair(I,hairSetting);
 
 
-[Face, imgFace, LeftEye, RightEye, Mouth, LeftEyebrow,  RightEyebrow] = detectFacialRegions(I);
+%[Face, imgFace, LeftEye, RightEye, Mouth, LeftEyebrow,  RightEyebrow] = detectFacialRegions(I);
 detector = buildDetector();
 [bbox a] = detectFaceParts(detector,I,2);
 
+% figure();imshow(a);
+Face = bbox(:, 1: 4);
+imgFace = I(Face(1,2):Face(1,2)+Face(1,4),Face(1,1):Face(1,1)+Face(1,3),:);
 x = bbox(:, 5: 8);
 y = bbox(:, 9:12);
 
+Mouth = bbox(:,13:16);
+Mouth(1,1) = int32(Mouth(1,1)-Face(1,1));
+Mouth(1,2) = int32(Mouth(1,2)-Face(1,2));
+
 LeftEye(1,1) = int32(x(1,1)-Face(1,1)+double(x(1,3)*0.2));
 LeftEye(1,2) = int32(x(1,2)-Face(1,2)+double(x(1,4)*0.2));
-LeftEye(1,3) = int32(x(1,3)*0.7);
+LeftEye(1,3) = int32(x(1,3)*0.6);
 LeftEye(1,4) = int32(x(1,4)*0.8);
+
 
 
 RightEye(1,1) = int32(y(1,1)-Face(1,1)+double(y(1,3)*0.2));
 RightEye(1,2) = int32(y(1,2)-Face(1,2)+double(y(1,4)*0.2));
-RightEye(1,3) = int32(y(1,3)*0.7);
+RightEye(1,3) = int32(y(1,3)*0.6);
 RightEye(1,4) = int32(y(1,4)*0.8);
 % LeftEyebrow = findEyeboundary(LeftEyebrow,imgFace);
 % RightEyebrow = findEyeboundary(RightEyebrow,imgFace);
 
-mouthRatio = 0;
+mouthRatio = 2;
 LeftEyeRatio = 0;
 RightEyeRatio = 0;
 % LeftEyeRatio = 10 * LeftEyebrow(4)/LeftEye(4);
@@ -43,7 +51,7 @@ RightEyeRatio = 0;
 % RightEyeRatio = 2.5;
 
 %%Cheek
-imgFace = cheek(LeftEye, RightEye, imgFace);
+% imgFace = cheek(LeftEye, RightEye, imgFace);
 
 imgFace = twoSideTransform(imgFace, Mouth, mouthSetting,mouthRatio);
 imgFace = twoSideTransform(imgFace,LeftEye,eyeSetting,LeftEyeRatio);
@@ -53,6 +61,9 @@ imgFace = twoSideTransform(imgFace,RightEye,eyeSetting,RightEyeRatio);
 %%  Eye coloring
 
 %create copy facial location for colorlenz
+LeftEyebrow = [0 0 0 0];
+RightEyebrow = [0 0 0 0];
+
 LeftEye_forL = LeftEye;
 RightEye_forL = RightEye;
 LeftEye_forL(1,2) = LeftEye(1,2)+LeftEyebrow(1,4);
@@ -65,7 +76,8 @@ imgFace = ColorLenz(RightEye_forL,eyeColorSetting,imgFace);
 
 G = imgFace;    
 [x,y,~] = size(G);
-I(Face(1,2):Face(1,2)+x-1,Face(1,1):Face(1,1)+y-1,:) = imgFace;
+I(Face(1,2):Face(1,2)+Face(1,4),Face(1,1):Face(1,1)+Face(1,3),:) = imgFace;
+%I(Face(1,2):Face(1,2)+x-1,Face(1,1):Face(1,1)+y-1,:) = imgFace;
 
 I_after =I;
 
@@ -260,7 +272,7 @@ function [imgFace] = twoSideTransform(imgFace, Part, setting, ratio)
     tform1 = affine2d([1 setting_val 0; 0 1 0; 0 0 1]);
     tform2 = affine2d([1 -setting_val 0; 0 1 0; 0 0 1]);
     
-    Part(1,2) = Part(1,2) + uint8(Part(1,4)*ratio/10);
+    Part(1,2) = uint8(Part(1,2)) + uint8(Part(1,4)*ratio/10);
     Part(1,4) = uint8(Part(1,4)*7/10);
     
     M1_UL = [Part(1,2); Part(1,1)];
@@ -298,12 +310,15 @@ function [imgFace] = twoSideTransform(imgFace, Part, setting, ratio)
     RightPart = imgFace(M2_UL(1):M2_LR(1),M2_UL(2):M2_LR(2),:);
     [x1,y1,~] = size(LeftPart);
     [x2,y2,~] = size(RightPart);
-    
+%     
     Color = imgFace(Part(1,2)+Part(1,4)-2,Part(1,1)-2,:);
     Color2 = imgFace(Part(1,2)+Part(1,4)-2,Part(1,1)+Part(1,3)+2,:);
     
     LeftPart = imwarp(LeftPart,tform1,'FillValues',[Color(1,1,1);Color(1,1,2);Color(1,1,3)]);
     RightPart = imwarp(RightPart,tform2,'FillValues',[Color2(1,1,1);Color2(1,1,2);Color2(1,1,3)]);
+%     
+%     LeftPart = imwarp(LeftPart,tform1);
+%     RightPart = imwarp(RightPart,tform2);%,'FillValues',[0 0 0]);
     %
     pos = [Part(1, 2), Part(1, 1)];
     dir = 0;
@@ -364,12 +379,12 @@ function [imgFace] = twoSideTransform(imgFace, Part, setting, ratio)
     end
     %
     
-    xy = [t_M1_UL(2) t_M1_UL(1)+1; t_M1_UR(2) t_M1_UR(1)+1];
+    xy = [t_M1_UL(2) t_M1_UL(1)+2; t_M1_UR(2) t_M1_UR(1)+2];
     %calculate slope and y intercept
     m1 = (xy(2,2)-xy(1,2))/(xy(2,1)-xy(1,1));
     n1 = xy(2,2)-xy(2,1) * m1;
    
-    xy = [t_M1_LL(2) t_M1_LL(1)-1; t_M1_LR(2) t_M1_LR(1)-1];
+    xy = [t_M1_LL(2) t_M1_LL(1)-2; t_M1_LR(2) t_M1_LR(1)-2];
     %calculate slope and y intercept
     m2 = (xy(2,2)-xy(1,2))/(xy(2,1)-xy(1,1));
     n2 = xy(2,2)-xy(2,1) * m2;
@@ -384,12 +399,12 @@ function [imgFace] = twoSideTransform(imgFace, Part, setting, ratio)
         end
     end
     
-    xy = [t_M2_UL(2) t_M2_UL(1)+1; t_M2_UR(2) t_M2_UR(1)+1];
+    xy = [t_M2_UL(2) t_M2_UL(1)+2; t_M2_UR(2) t_M2_UR(1)+2];
     %calculate slope and y intercept
     m1 = (xy(2,2)-xy(1,2))/(xy(2,1)-xy(1,1));
     n1 = xy(2,2)-xy(2,1) * m1;
    
-    xy = [t_M2_LL(2) t_M2_LL(1)-1; t_M2_LR(2) t_M2_LR(1)-1];
+    xy = [t_M2_LL(2) t_M2_LL(1)-2; t_M2_LR(2) t_M2_LR(1)-2];
     %calculate slope and y intercept
     m2 = (xy(2,2)-xy(1,2))/(xy(2,1)-xy(1,1));
     n2 = xy(2,2)-xy(2,1) * m2;
