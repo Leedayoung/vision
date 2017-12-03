@@ -9,6 +9,8 @@ mouthSetting = para('mouth');
 eyeSetting = para('eye');
 hairSetting = para('hair');
 eyeColorSetting = para('lense');
+cheek_set = para('cheek');
+
 %hairSetting
 I = dyeHair(I,hairSetting);
 
@@ -32,8 +34,6 @@ LeftEye(1,2) = int32(x(1,2)-Face(1,2)+double(x(1,4)*0.2));
 LeftEye(1,3) = int32(x(1,3)*0.6);
 LeftEye(1,4) = int32(x(1,4)*0.8);
 
-
-
 RightEye(1,1) = int32(y(1,1)-Face(1,1)+double(y(1,3)*0.2));
 RightEye(1,2) = int32(y(1,2)-Face(1,2)+double(y(1,4)*0.2));
 RightEye(1,3) = int32(y(1,3)*0.6);
@@ -51,7 +51,9 @@ RightEyeRatio = 0;
 % RightEyeRatio = 2.5;
 
 %%Cheek
-% imgFace = cheek(LeftEye, RightEye, imgFace);
+if(cheek_set)
+    imgFace = cheek(LeftEye, RightEye, imgFace);
+end
 
 imgFace = twoSideTransform(imgFace, Mouth, mouthSetting,mouthRatio);
 imgFace = twoSideTransform(imgFace,LeftEye,eyeSetting,LeftEyeRatio);
