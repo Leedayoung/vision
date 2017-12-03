@@ -14,13 +14,32 @@ I = dyeHair(I,hairSetting);
 
 
 [Face, imgFace, LeftEye, RightEye, Mouth, LeftEyebrow,  RightEyebrow] = detectFacialRegions(I);
+detector = buildDetector();
+[bbox a] = detectFaceParts(detector,I,2);
+figure;
+imshow(a);
 
-LeftEyebrow = findEyeboundary(LeftEyebrow,imgFace);
-RightEyebrow = findEyeboundary(RightEyebrow,imgFace);
+x = bbox(:, 5: 8);
+y = bbox(:, 9:12);
+
+LeftEye(1,1) = x(1,1)-Face(1,1);
+LeftEye(1,2) = x(1,2)-Face(1,2);
+LeftEye(1,3) = x(1,3);
+LeftEye(1,4) = x(1,4);
+
+
+RightEye(1,1) = y(1,1)-Face(1,1);
+RightEye(1,2) = y(1,2)-Face(1,2);
+RightEye(1,3) = y(1,3);
+RightEye(1,4) = y(1,4);
+% LeftEyebrow = findEyeboundary(LeftEyebrow,imgFace);
+% RightEyebrow = findEyeboundary(RightEyebrow,imgFace);
 
 mouthRatio = 0;
-LeftEyeRatio = 10 * LeftEyebrow(4)/LeftEye(4);
-RightEyeRatio = 10 * RightEyebrow(4)/RightEye(4);
+LeftEyeRatio = 4;
+RightEyeRatio = 4;
+% LeftEyeRatio = 10 * LeftEyebrow(4)/LeftEye(4);
+% RightEyeRatio = 10 * RightEyebrow(4)/RightEye(4);
 % 
 % LeftEyeRatio = 2.5;
 % RightEyeRatio = 2.5;
@@ -45,13 +64,10 @@ RightEye_forL(1,4) = RightEye(1,4)-RightEyebrow(1,4);
 
 imgFace = ColorLenz(LeftEye_forL,eyeColorSetting,imgFace);
 imgFace = ColorLenz(RightEye_forL,eyeColorSetting,imgFace);
-imgFace = ColorLenz(Mouth, eyeColorSetting,imgFace);
-
 
 G = imgFace;    
 [x,y,~] = size(G);
 I(Face(1,2):Face(1,2)+x-1,Face(1,1):Face(1,1)+y-1,:) = imgFace;
-imshow(I);
 
 I_after =I;
 
