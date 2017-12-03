@@ -15,40 +15,49 @@ cheek_set = para('cheek');
 I = dyeHair(I,hairSetting);
 
 
-%[Face, imgFace, LeftEye, RightEye, Mouth, LeftEyebrow,  RightEyebrow] = detectFacialRegions(I);
-detector = buildDetector();
-[bbox a] = detectFaceParts(detector,I,2);
+[Face, imgFace, LeftEye, RightEye, Mouth, LeftEyebrow,  RightEyebrow] = detectFacialRegions(I);
+if LeftEye ~= [0 0 0 0]
+    LeftEyebrow = findEyeboundary(LeftEyebrow,imgFace);
+    RightEyebrow = findEyeboundary(RightEyebrow,imgFace);
+    mouthRatio = 2;
+    LeftEyeRatio = 10 * LeftEyebrow(4)/LeftEye(4);
+    RightEyeRatio = 10 * RightEyebrow(4)/RightEye(4);
+else
+    detector = buildDetector();
+    [bbox a] = detectFaceParts(detector,I,2);
+    Face = bbox(:, 1: 4);
+    imgFace = I(Face(1,2):Face(1,2)+Face(1,4),Face(1,1):Face(1,1)+Face(1,3),:);
+    x = bbox(:, 5: 8);
+    y = bbox(:, 9:12);
+    Mouth = bbox(:,13:16);
+    Mouth(1,1) = int32(Mouth(1,1)-Face(1,1));
+    Mouth(1,2) = int32(Mouth(1,2)-Face(1,2));
 
-% figure();imshow(a);
-Face = bbox(:, 1: 4);
-imgFace = I(Face(1,2):Face(1,2)+Face(1,4),Face(1,1):Face(1,1)+Face(1,3),:);
-x = bbox(:, 5: 8);
-y = bbox(:, 9:12);
+    LeftEye(1,1) = int32(x(1,1)-Face(1,1)+double(x(1,3)*0.2));
+    LeftEye(1,2) = int32(x(1,2)-Face(1,2)+double(x(1,4)*0.2));
+    LeftEye(1,3) = int32(x(1,3)*0.6);
+    LeftEye(1,4) = int32(x(1,4)*0.8);
 
-Mouth = bbox(:,13:16);
-Mouth(1,1) = int32(Mouth(1,1)-Face(1,1));
-Mouth(1,2) = int32(Mouth(1,2)-Face(1,2));
+    RightEye(1,1) = int32(y(1,1)-Face(1,1)+double(y(1,3)*0.2));
+    RightEye(1,2) = int32(y(1,2)-Face(1,2)+double(y(1,4)*0.2));
+    RightEye(1,3) = int32(y(1,3)*0.6);
+    RightEye(1,4) = int32(y(1,4)*0.8);
+    
+    mouthRatio = 2;
+    LeftEyeRatio = 0;
+    RightEyeRatio = 0;
+    LeftEyebrow = [0 0 0 0];
+    RightEyebrow = [0 0 0 0];
+end
 
-LeftEye(1,1) = int32(x(1,1)-Face(1,1)+double(x(1,3)*0.2));
-LeftEye(1,2) = int32(x(1,2)-Face(1,2)+double(x(1,4)*0.2));
-LeftEye(1,3) = int32(x(1,3)*0.6);
-LeftEye(1,4) = int32(x(1,4)*0.8);
 
-RightEye(1,1) = int32(y(1,1)-Face(1,1)+double(y(1,3)*0.2));
-RightEye(1,2) = int32(y(1,2)-Face(1,2)+double(y(1,4)*0.2));
-RightEye(1,3) = int32(y(1,3)*0.6);
-RightEye(1,4) = int32(y(1,4)*0.8);
-% LeftEyebrow = findEyeboundary(LeftEyebrow,imgFace);
-% RightEyebrow = findEyeboundary(RightEyebrow,imgFace);
 
-mouthRatio = 2;
-LeftEyeRatio = 0;
-RightEyeRatio = 0;
-% LeftEyeRatio = 10 * LeftEyebrow(4)/LeftEye(4);
-% RightEyeRatio = 10 * RightEyebrow(4)/RightEye(4);
-% 
-% LeftEyeRatio = 2.5;
-% RightEyeRatio = 2.5;
+
+
+
+
+
+
 
 %%Cheek
 if(cheek_set)
@@ -63,8 +72,6 @@ imgFace = twoSideTransform(imgFace,RightEye,eyeSetting,RightEyeRatio);
 %%  Eye coloring
 
 %create copy facial location for colorlenz
-LeftEyebrow = [0 0 0 0];
-RightEyebrow = [0 0 0 0];
 
 LeftEye_forL = LeftEye;
 RightEye_forL = RightEye;
@@ -76,8 +83,8 @@ RightEye_forL(1,4) = RightEye(1,4)-RightEyebrow(1,4);
 imgFace = ColorLenz(LeftEye_forL,eyeColorSetting,imgFace);
 imgFace = ColorLenz(RightEye_forL,eyeColorSetting,imgFace);
 
-G = imgFace;    
-[x,y,~] = size(G);
+% G = imgFace;    
+% [x,y,~] = size(G);
 I(Face(1,2):Face(1,2)+Face(1,4),Face(1,1):Face(1,1)+Face(1,3),:) = imgFace;
 %I(Face(1,2):Face(1,2)+x-1,Face(1,1):Face(1,1)+y-1,:) = imgFace;
 
