@@ -19,7 +19,7 @@ function  [Face, imgFace, LeftEye, RightEye, Mouth, LeftEyebrow,  RightEyebrow] 
  EyeDetect = vision.CascadeObjectDetector('LeftEyeCART');
  Eye=step(EyeDetect,imgFace);
  LeftEye  = Eye(1,:);
- 
+ LeftEye
  %To detect Right Eye
 %
  RightEye = Eye(2,:);
