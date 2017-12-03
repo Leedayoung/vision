@@ -15,8 +15,8 @@ function imgFace = cheek(LeftEye, RightEye, imgFace)
 end
 
 function imgFace_ = fillLeft(Eye, imgFace)
-    x = Eye(1, 1);
-    y = Eye(1, 2) + uint32(1.2 * Eye(1, 4));
+    x = uint32(Eye(1, 1));
+    y = uint32(Eye(1, 2)) + uint32(1.2 * Eye(1, 4));
     h = uint32(Eye(1, 4) / 2);
     w = uint32(Eye(1, 3) / 2);
     x = uint32((x + x + w)/2  - (w/2));
@@ -42,8 +42,8 @@ end
 
 
 function imgFace_ = fillRight(Eye, imgFace)
-    x = Eye(1, 1);
-    y = Eye(1, 2) + uint32(1.2 * Eye(1, 4)); % I(x, y,:) =~~
+    x = uint32(Eye(1, 1));
+    y = uint32(Eye(1, 2)) + uint32(1.2 * Eye(1, 4)); % I(x, y,:) =~~
     w = uint32(Eye(1, 4) / 2);
     h = uint32(Eye(1, 3) / 2);
     x = uint32((x + x + w)/2  + (w/2));
