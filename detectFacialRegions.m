@@ -26,11 +26,6 @@ function  [Face, imgFace, LeftEye, RightEye, Mouth, LeftEyebrow,  RightEyebrow] 
      LeftEye = [0 0 0 0];
      RightEye = [0 0 0 0];
  end
-
- 
- %To detect Right Eye
-%
-
  
 %To detect Mouth
  MouthDetect = vision.CascadeObjectDetector('Mouth','MergeThreshold',16);
